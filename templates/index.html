@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Predictor</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar (Optional: Can be integrated or kept separate) -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <span>CarValue</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Home</a>
+                <a href="#features-section">Features</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper for Dark Theme -->
+    <div class="content-wrapper">
+
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Car Price Predictor</h1>
+                <p class="subtitle">Find the value of your next car instantly.</p>
+                <!-- Optional: Add a button if desired -->
+                <!-- <a href="#predictor-card" class="btn btn-hero">Get Started</a> -->
+            </div>
+        </div>
+
+        <!-- Main Interactive Area -->
+        <div class="container">
+            <div class="card" id="predictor-card"> <!-- Added ID for potential scroll link -->
+                <div class="card-header">
+                    <i class="fas fa-calculator header-icon"></i>
+                    <h2>Calculate Your Car's Value</h2>
+                </div>
+
+                <form action="{{ url_for('predict')}}" method="post" class="prediction-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-grid">
+                        <!-- Company Selection -->
+                        <div class="form-group">
+                            <label for="company"><i class="fas fa-building"></i> Brand</label>
+                            <div class="select-wrapper">
+                                <select name="company" id="company" required="required">
+                                    <option value="">Select Brand</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company }}">{{ company }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Car Model Selection -->
+                        <div class="form-group">
+                            <label for="car_models"><i class="fas fa-car-side"></i> Model</label>
+                            <div class="select-wrapper">
+                                <select name="car_models" id="car_models" required="required" disabled>
+                                    <option value="">Select Brand First</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Year Input -->
+                        <div class="form-group">
+                            <label for="year"><i class="fas fa-calendar-alt"></i> Year</label>
+                            <input type="number" id="year" name="year" min="1990" max="2024" placeholder="YYYY" required="required">
+                        </div>
+
+                        <!-- Fuel Type Selection -->
+                        <div class="form-group">
+                            <label for="fuel_type"><i class="fas fa-gas-pump"></i> Fuel</label>
+                            <div class="select-wrapper">
+                                <select name="fuel_type" id="fuel_type" required="required">
+                                    <option value="">Select Fuel Type</option>
+                                    {% for fuel in fuel_types %}
+                                    <option value="{{ fuel }}">{{ fuel }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Kilometers Input -->
+                        <div class="form-group">
+                            <label for="kilo_driven"><i class="fas fa-road"></i> Kilometers</label>
+                            <input type="number" id="kilo_driven" name="kilo_driven" min="0" placeholder="e.g., 50000" required="required">
+                        </div>
+
+                        <!-- Submit Button (Moved inside grid for potential better layout) -->
+                         <div class="form-group submit-group full-width"> <!-- Added full-width class -->
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calculator"></i> Calculate Price
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Prediction Result -->
+                {% if prediction_text %}
+                <div class="prediction">
+                    <div class="prediction-content">
+                        {% if 'Error' in prediction_text or 'error' in prediction_text or 'not found' in prediction_text or 'Invalid' in prediction_text %}
+                            <i class="fas fa-exclamation-triangle prediction-icon error-icon"></i>
+                        {% else %}
+                             <i class="fas fa-tags prediction-icon success-icon"></i>
+                        {% endif %}
+                        <h2>{{ prediction_text }}</h2>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Features Section -->
+            <div id="features-section" class="features-section"> <!-- Renamed ID -->
+                 <h2 class="section-title">Why Choose Us?</h2> <!-- Optional Title -->
+                <div class="feature-card">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI-Powered</h3>
+                    <p>Leveraging advanced ML for precise valuations.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Instant Results</h3>
+                    <p>Get your car's estimated value in seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Market Analysis</h3>
+                    <p>Calculations based on current market data.</p>
+                </div>
+            </div>
+        </div> <!-- End .container -->
+
+    </div> <!-- End .content-wrapper -->
+
+
+    <!-- Footer -->
+    <footer id="contact" class="footer"> <!-- Added ID -->
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h3 class="logo-footer"><i class="fas fa-car"></i> CarValue</h3>
+                <p>Accurate, AI-driven car price predictions to help you make informed decisions.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#features-section">Features</a></li>
+                    <li><a href="#predictor-card">Predict Price</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact-info">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-map-marker-alt"></i>Near Lovley Professional UNiversity , Lovely auto</p>
+                <p><i class="fas fa-envelope"></i> sudovicky@gmail.com</p>
+                <p><i class="fas fa-phone"></i> +91 7295818429 </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 CarValue | Design inspired by modern UI trends | Developed by Vicky Kumar</p>
+        </div>
+    </footer>
+
+
+    <!-- Loading Overlay (Keep as is) -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+        <p>Calculating your car's value...</p>
+    </div>
+
+    <!-- Link JavaScript at the end -->
+     <script src="../static/js/script.js"></script>
+    <!-- <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+
+</body>
+</html>
